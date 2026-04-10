@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  DELIVERY
+}
+
+enum OrderStatus {
+  CONFIRMED
+  CALLED_CUSTOMER
+  WHATSAPP_ADDRESS_RECEIVED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentType {
+  COD
+  CMI
+  OTHER
+}
+
+enum OrderEventType {
+  CONFIRMED
+  CALLED_CUSTOMER
+  WHATSAPP_ADDRESS_RECEIVED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  NOTE
+}
+
+model User {
+  id        String       @id @default(cuid())
+  name      String
+  email     String       @unique
+  password  String
+  role      UserRole
+  orders    Order[]      @relation("AssignedOrders")
+  events    OrderEvent[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  orderNumber  String      @unique
+  customerName String
+  phone        String
+  quartier     String?
+  address      String?
+  note         String?
+  amount       Float
+  paymentType  PaymentType @default(COD)
+  status       OrderStatus @default(CONFIRMED)
+
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedOrders", fields: [assignedToId], references: [id])
+
+  events OrderEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderEvent {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  type OrderEventType
+  note String?
+
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+}
