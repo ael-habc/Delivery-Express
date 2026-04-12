@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { DeliveryNotifications } from "@/components/delivery-notifications";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { requireUser } from "@/lib/auth";
@@ -26,7 +27,7 @@ export default async function WorkspaceLayout({
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div>
             <Image
-              src="/image/logo.png"
+              src="/logo.png"
               alt="Logo"
               width={128}
               height={32}
@@ -45,6 +46,9 @@ export default async function WorkspaceLayout({
                 <Link href={link.href}>{link.label}</Link>
               </Button>
             ))}
+            {user.role === UserRole.DELIVERY ? (
+              <DeliveryNotifications userId={user.id} />
+            ) : null}
             <SignOutButton />
           </nav>
         </div>
