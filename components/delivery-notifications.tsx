@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Bell, X } from "lucide-react";
+import { Bell, Volume2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -15,9 +15,17 @@ type DeliveryNotificationOrder = {
 };
 
 export function DeliveryNotifications({ userId }: { userId: string }) {
-  const [newOrders, setNewOrders] = useState<DeliveryNotificationOrder[]>([]);
-  const initializedRef = useRef(false);
   const seenStorageKey = `delivery-notifications-seen-${userId}`;
+  const soundStorageKey = `delivery-notifications-sound-${userId}`;
+  const [newOrders, setNewOrders] = useState<DeliveryNotificationOrder[]>([]);
+  const [soundEnabled, setSoundEnabled] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      localStorage.getItem(soundStorageKey) === "true",
+  );
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const initializedRef = useRef(false);
+  const soundEnabledRef = useRef(soundEnabled);
 
   useEffect(() => {
     function syncNotifications(orders: DeliveryNotificationOrder[]) {
@@ -35,6 +43,10 @@ export function DeliveryNotifications({ userId }: { userId: string }) {
       const unseenOrders = orders.filter(
         (order) => !storedSeenIds.includes(order.id),
       );
+
+      if (unseenOrders.length > 0) {
+        triggerMobileAlert(unseenOrders, soundEnabledRef.current, audioContextRef);
+      }
 
       setNewOrders(unseenOrders);
     }
@@ -64,6 +76,24 @@ export function DeliveryNotifications({ userId }: { userId: string }) {
     setNewOrders((current) =>
       current.filter((order) => !orderIds.includes(order.id)),
     );
+  }
+
+  async function enableNotificationSound() {
+    soundEnabledRef.current = true;
+    setSoundEnabled(true);
+    localStorage.setItem(soundStorageKey, "true");
+
+    if ("Notification" in window && Notification.permission === "default") {
+      await Notification.requestPermission();
+    }
+
+    const audioContext = getAudioContext(audioContextRef);
+
+    if (audioContext?.state === "suspended") {
+      await audioContext.resume();
+    }
+
+    playNotificationRing(audioContextRef);
   }
 
   return (
@@ -104,6 +134,17 @@ export function DeliveryNotifications({ userId }: { userId: string }) {
           </div>
 
           <div className="mt-4 space-y-2">
+            {!soundEnabled ? (
+              <button
+                type="button"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-pink-50 px-3 py-2 text-sm font-medium text-pink-700 transition-colors hover:bg-pink-100"
+                onClick={enableNotificationSound}
+              >
+                <Volume2 className="h-4 w-4" />
+                Activer le son sur mobile
+              </button>
+            ) : null}
+
             {newOrders.slice(0, 3).map((order) => (
               <Link
                 key={order.id}
@@ -129,6 +170,84 @@ export function DeliveryNotifications({ userId }: { userId: string }) {
       ) : null}
     </div>
   );
+}
+
+function triggerMobileAlert(
+  orders: DeliveryNotificationOrder[],
+  soundEnabled: boolean,
+  audioContextRef: React.RefObject<AudioContext | null>,
+) {
+  if ("vibrate" in navigator) {
+    navigator.vibrate([250, 120, 250]);
+  }
+
+  if (soundEnabled) {
+    playNotificationRing(audioContextRef);
+  }
+
+  if (
+    "Notification" in window &&
+    document.hidden &&
+    Notification.permission === "granted"
+  ) {
+    const firstOrder = orders[0];
+    const extraCount = orders.length > 1 ? ` +${orders.length - 1}` : "";
+
+    new Notification("Nouvelle commande assignee", {
+      body: `${firstOrder.orderNumber} - ${firstOrder.customerName}${extraCount}`,
+      tag: firstOrder.id,
+    });
+  }
+}
+
+function getAudioContext(audioContextRef?: React.RefObject<AudioContext | null>) {
+  if (audioContextRef?.current) {
+    return audioContextRef.current;
+  }
+
+  const AudioContextConstructor =
+    window.AudioContext ??
+    (window as Window & { webkitAudioContext?: typeof AudioContext })
+      .webkitAudioContext;
+
+  if (!AudioContextConstructor) {
+    return null;
+  }
+
+  const audioContext = new AudioContextConstructor();
+
+  if (audioContextRef) {
+    audioContextRef.current = audioContext;
+  }
+
+  return audioContext;
+}
+
+function playNotificationRing(
+  audioContextRef?: React.RefObject<AudioContext | null>,
+) {
+  const audioContext = audioContextRef?.current;
+
+  if (!audioContext || audioContext.state !== "running") {
+    return;
+  }
+
+  const now = audioContext.currentTime;
+
+  [0, 0.28].forEach((offset) => {
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, now + offset);
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    gain.gain.setValueAtTime(0.0001, now + offset);
+    gain.gain.exponentialRampToValueAtTime(0.22, now + offset + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.18);
+    oscillator.start(now + offset);
+    oscillator.stop(now + offset + 0.2);
+  });
 }
 
 function getSeenOrderIds(storageKey: string) {

@@ -13,7 +13,6 @@ import {
   User2,
 } from "lucide-react";
 
-import { DEFAULT_LOGIN_PASSWORD } from "@/lib/auth-config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -23,7 +22,7 @@ const LOGO_SRC = "/logo.png";
 export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
   const router = useRouter();
   const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState(DEFAULT_LOGIN_PASSWORD);
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
