@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bell, Volume2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { appCopy } from "@/lib/copy";
 
 type DeliveryNotificationOrder = {
   id: string;
@@ -99,9 +100,9 @@ export function DeliveryNotifications({ userId }: { userId: string }) {
   return (
     <div className="relative">
       <Button asChild variant="outline" className="relative">
-        <Link href="/delivery/orders" aria-label="Notifications livraison">
+        <Link href="/delivery/orders" aria-label={appCopy.notifications.buttonAria}>
           <Bell className="h-4 w-4" />
-          <span className="hidden sm:inline">Notifications</span>
+          <span className="hidden sm:inline">{appCopy.notifications.buttonLabel}</span>
           {newOrders.length > 0 ? (
             <span className="absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-pink-500 px-1 text-xs font-semibold text-white shadow-sm">
               {newOrders.length}
@@ -115,17 +116,20 @@ export function DeliveryNotifications({ userId }: { userId: string }) {
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-semibold text-slate-950">
-                Nouvelle commande assignee
+                {appCopy.notifications.title}
               </p>
               <p className="mt-1 text-sm text-slate-500">
                 {newOrders.length === 1
-                  ? "Une commande vient d'etre ajoutee a ton espace."
-                  : `${newOrders.length} commandes viennent d'etre ajoutees a ton espace.`}
+                  ? appCopy.notifications.singleBody
+                  : appCopy.notifications.multipleBody.replace(
+                      "{count}",
+                      String(newOrders.length),
+                    )}
               </p>
             </div>
             <button
               type="button"
-              aria-label="Fermer la notification"
+              aria-label={appCopy.notifications.closeAria}
               className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
               onClick={() => markOrdersSeen(newOrders.map((order) => order.id))}
             >
@@ -141,7 +145,7 @@ export function DeliveryNotifications({ userId }: { userId: string }) {
                 onClick={enableNotificationSound}
               >
                 <Volume2 className="h-4 w-4" />
-                Activer le son sur mobile
+                {appCopy.notifications.enableSound}
               </button>
             ) : null}
 
@@ -193,7 +197,7 @@ function triggerMobileAlert(
     const firstOrder = orders[0];
     const extraCount = orders.length > 1 ? ` +${orders.length - 1}` : "";
 
-    new Notification("Nouvelle commande assignee", {
+    new Notification(appCopy.notifications.title, {
       body: `${firstOrder.orderNumber} - ${firstOrder.customerName}${extraCount}`,
       tag: firstOrder.id,
     });

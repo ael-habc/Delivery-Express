@@ -1,3 +1,4 @@
+import { appCopy } from "@/lib/copy";
 import { ORDER_EVENT_LABELS, formatDateTime } from "@/lib/order-meta";
 import { type OrderWithDetails } from "@/lib/orders";
 import { type OrderEventType } from "@/src/generated/prisma";
@@ -40,7 +41,7 @@ export function OrderTimeline({
   if (events.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-        Aucun événement pour le moment.
+        {appCopy.timeline.empty}
       </div>
     );
   }
@@ -72,7 +73,9 @@ export function OrderTimeline({
               </p>
             </div>
             {event.note ? (
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{event.note}</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                {event.note}
+              </p>
             ) : null}
             {event.createdBy ? (
               <p className="mt-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">

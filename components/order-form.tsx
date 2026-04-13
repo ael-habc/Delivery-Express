@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import quartiers from "@/lib/quartiers.json";
+import { appCopy } from "@/lib/copy";
 import { PAYMENT_TYPE_LABELS } from "@/lib/order-meta";
+import quartiers from "@/lib/quartiers.json";
 import { PaymentType, type User } from "@/src/generated/prisma";
 
 type DeliveryUserOption = Pick<User, "id" | "name" | "email">;
@@ -96,7 +97,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
 
     if (!response.ok || !result.ok) {
       setError(
-        result.details?.join(" ") || result.error || "Une erreur est survenue.",
+        result.details?.join(" ") || result.error || appCopy.orderForm.error,
       );
       setIsSubmitting(false);
       return;
@@ -114,7 +115,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Numéro de commande">
+        <Field label={appCopy.orderForm.fields.orderNumber}>
           <Input
             value={values.orderNumber}
             onChange={(event) =>
@@ -123,11 +124,11 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
                 orderNumber: event.target.value,
               }))
             }
-            placeholder="CMD-001"
+            placeholder={appCopy.orderForm.placeholders.orderNumber}
             disabled={mode === "update"}
           />
         </Field>
-        <Field label="Nom client">
+        <Field label={appCopy.orderForm.fields.customerName}>
           <Input
             value={values.customerName}
             onChange={(event) =>
@@ -136,10 +137,10 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
                 customerName: event.target.value,
               }))
             }
-            placeholder="Nom complet"
+            placeholder={appCopy.orderForm.placeholders.customerName}
           />
         </Field>
-        <Field label="Téléphone">
+        <Field label={appCopy.orderForm.fields.phone}>
           <Input
             value={values.phone}
             onChange={(event) =>
@@ -148,10 +149,10 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
                 phone: event.target.value,
               }))
             }
-            placeholder="06..."
+            placeholder={appCopy.orderForm.placeholders.phone}
           />
         </Field>
-        <Field label="Quartier">
+        <Field label={appCopy.orderForm.fields.quartier}>
           <Select
             value={values.quartier}
             onChange={(event) =>
@@ -161,7 +162,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
               }))
             }
           >
-            <option value="">Choisir un quartier</option>
+            <option value="">{appCopy.orderForm.placeholders.quartier}</option>
             {quartiers.map((quartier) => (
               <option key={quartier} value={quartier}>
                 {quartier}
@@ -169,7 +170,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
             ))}
           </Select>
         </Field>
-        <Field label="Montant">
+        <Field label={appCopy.orderForm.fields.amount}>
           <Input
             type="number"
             min="0"
@@ -184,7 +185,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
             placeholder="0.00"
           />
         </Field>
-        <Field label="Type de paiement">
+        <Field label={appCopy.orderForm.fields.paymentType}>
           <Select
             value={values.paymentType}
             onChange={(event) =>
@@ -203,7 +204,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
         </Field>
       </div>
 
-      <Field label="Livreur assigné">
+      <Field label={appCopy.orderForm.fields.assignedTo}>
         <Select
           value={values.assignedToId}
           onChange={(event) =>
@@ -213,7 +214,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
             }))
           }
         >
-          <option value="">Non assigné</option>
+          <option value="">{appCopy.orderForm.unassigned}</option>
           {deliveryUsers.map((user) => (
             <option key={user.id} value={user.id}>
               {user.name}
@@ -222,7 +223,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
         </Select>
       </Field>
 
-      <Field label="Adresse">
+      <Field label={appCopy.orderForm.fields.address}>
         <Textarea
           value={values.address}
           onChange={(event) =>
@@ -231,11 +232,11 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
               address: event.target.value,
             }))
           }
-          placeholder="Repère, immeuble, étage..."
+          placeholder={appCopy.orderForm.placeholders.address}
         />
       </Field>
 
-      <Field label="Note">
+      <Field label={appCopy.orderForm.fields.note}>
         <Textarea
           value={values.note}
           onChange={(event) =>
@@ -244,7 +245,7 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
               note: event.target.value,
             }))
           }
-          placeholder="Informations internes"
+          placeholder={appCopy.orderForm.placeholders.note}
         />
       </Field>
 
@@ -254,13 +255,13 @@ export function OrderForm({ mode, deliveryUsers, order }: OrderFormProps) {
         </p>
       ) : null}
 
-      <div className="flex justify-end mt-2">
+      <div className="mt-2 flex justify-end">
         <Button type="submit" size="lg" disabled={isSubmitting}>
           {isSubmitting
-            ? "Enregistrement..."
+            ? appCopy.orderForm.saving
             : mode === "create"
-              ? "Créer la commande"
-              : "Mettre à jour"}
+              ? appCopy.orderForm.create
+              : appCopy.orderForm.update}
         </Button>
       </div>
     </form>

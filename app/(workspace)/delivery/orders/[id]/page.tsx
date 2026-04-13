@@ -6,6 +6,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireDeliveryUser } from "@/lib/auth";
+import { appCopy } from "@/lib/copy";
 import { formatMoney, orderDetailsInclude, PAYMENT_TYPE_LABELS } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
 
@@ -36,13 +37,15 @@ export default async function DeliveryOrderDetailPage({
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {order.orderNumber}
             </p>
-            <h2 className="text-2xl font-semibold tracking-tight">{order.customerName}</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              {order.customerName}
+            </h2>
           </div>
           <StatusBadge status={order.status} />
         </div>
         <div className="flex flex-wrap gap-3">
           <Button asChild size="lg">
-            <a href={`tel:${order.phone}`}>Appeler</a>
+            <a href={`tel:${order.phone}`}>{appCopy.deliveryOrderDetail.call}</a>
           </Button>
           <Button asChild size="lg" variant="outline">
             <a
@@ -50,7 +53,7 @@ export default async function DeliveryOrderDetailPage({
               target="_blank"
               rel="noreferrer"
             >
-              Ouvrir WhatsApp
+              {appCopy.deliveryOrderDetail.openWhatsapp}
             </a>
           </Button>
         </div>
@@ -60,21 +63,36 @@ export default async function DeliveryOrderDetailPage({
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Infos utiles</CardTitle>
+              <CardTitle>{appCopy.deliveryOrderDetail.usefulInfo}</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 text-sm">
-              <Info label="Telephone" value={order.phone} />
-              <Info label="Quartier" value={order.quartier || "-"} />
-              <Info label="Adresse" value={order.address || "-"} />
-              <Info label="Note" value={order.note || "-"} />
-              <Info label="Montant" value={formatMoney(order.amount)} />
-              <Info label="Paiement" value={PAYMENT_TYPE_LABELS[order.paymentType]} />
+              <Info label={appCopy.deliveryOrderDetail.phone} value={order.phone} />
+              <Info
+                label={appCopy.deliveryOrderDetail.quartier}
+                value={order.quartier || appCopy.deliveryOrderDetail.emptyValue}
+              />
+              <Info
+                label={appCopy.deliveryOrderDetail.address}
+                value={order.address || appCopy.deliveryOrderDetail.emptyValue}
+              />
+              <Info
+                label={appCopy.deliveryOrderDetail.note}
+                value={order.note || appCopy.deliveryOrderDetail.emptyValue}
+              />
+              <Info
+                label={appCopy.deliveryOrderDetail.amount}
+                value={formatMoney(order.amount)}
+              />
+              <Info
+                label={appCopy.deliveryOrderDetail.payment}
+                value={PAYMENT_TYPE_LABELS[order.paymentType]}
+              />
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Actions rapides</CardTitle>
+              <CardTitle>{appCopy.deliveryOrderDetail.quickActions}</CardTitle>
             </CardHeader>
             <CardContent>
               <DeliveryActions orderId={order.id} status={order.status} />
@@ -84,7 +102,7 @@ export default async function DeliveryOrderDetailPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Timeline</CardTitle>
+            <CardTitle>{appCopy.deliveryOrderDetail.timeline}</CardTitle>
           </CardHeader>
           <CardContent>
             <OrderTimeline events={order.events} />

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { appCopy } from "@/lib/copy";
 import { OrderEventType } from "@/src/generated/prisma";
 
 export function OrderNoteForm({ orderId }: { orderId: string }) {
@@ -33,7 +34,7 @@ export function OrderNoteForm({ orderId }: { orderId: string }) {
     const result = await response.json();
 
     if (!response.ok || !result.ok) {
-      setError(result.details?.join(" ") || result.error || "Impossible d'ajouter la note.");
+      setError(result.details?.join(" ") || result.error || appCopy.orderNote.error);
       setIsSubmitting(false);
       return;
     }
@@ -48,12 +49,12 @@ export function OrderNoteForm({ orderId }: { orderId: string }) {
       <Textarea
         value={note}
         onChange={(event) => setNote(event.target.value)}
-        placeholder="Ajouter une note interne..."
+        placeholder={appCopy.orderNote.placeholder}
       />
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting || note.trim().length === 0}>
-          {isSubmitting ? "Ajout..." : "Ajouter une note"}
+          {isSubmitting ? appCopy.orderNote.submitting : appCopy.orderNote.submit}
         </Button>
       </div>
     </form>

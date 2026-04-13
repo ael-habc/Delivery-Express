@@ -15,6 +15,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { appCopy } from "@/lib/copy";
 
 const HERO_IMAGE_SRC = "/hero.png";
 const LOGO_SRC = "/logo.png";
@@ -40,7 +41,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
     });
 
     if (!result || result.error) {
-      setError("Identifiant ou mot de passe invalide.");
+      setError(appCopy.login.invalidCredentials);
       setIsSubmitting(false);
       return;
     }
@@ -56,7 +57,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
           <div className="mb-6 w-full flex items-center justify-center ">
             <Image
               src={LOGO_SRC}
-              alt="Logo"
+              alt={appCopy.app.logoAlt}
               width={280}
               height={70}
               priority
@@ -66,7 +67,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
 
           <div className="space-y-3 w-full  flex flex-col items-center justify-start">
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight bg-gradient-to-r from-pink-500 to-fuchsia-600 bg-clip-text text-transparent">
-              Se connecter
+              {appCopy.login.title}
             </h1>
           </div>
 
@@ -76,7 +77,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
                 className="text-sm font-medium text-slate-700"
                 htmlFor="identifier"
               >
-                Email / Identifiant
+                {appCopy.login.identifierLabel}
               </label>
 
               <div className="group relative">
@@ -85,7 +86,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
                   id="identifier"
                   value={identifier}
                   onChange={(event) => setIdentifier(event.target.value)}
-                  placeholder="login@gmail.com"
+                  placeholder={appCopy.login.identifierPlaceholder}
                   autoComplete="username"
                   required
                   className="h-12 rounded-[14px] border border-slate-200 bg-white pl-11 pr-4 text-slate-800 shadow-sm transition-all placeholder:text-slate-400 focus-visible:border-pink-400 focus-visible:ring-2 focus-visible:ring-pink-100"
@@ -99,14 +100,14 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
                   className="text-sm font-medium text-slate-700"
                   htmlFor="password"
                 >
-                  Password
+                  {appCopy.login.passwordLabel}
                 </label>
 
                 <button
                   type="button"
                   className="text-xs text-slate-400 transition-colors hover:text-[#db86ad]"
                 >
-                  Forgot Password ?
+                  {appCopy.login.forgotPassword}
                 </button>
               </div>
 
@@ -125,8 +126,8 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
                   type="button"
                   aria-label={
                     showPassword
-                      ? "Masquer le mot de passe"
-                      : "Afficher le mot de passe"
+                      ? appCopy.login.hidePassword
+                      : appCopy.login.showPassword
                   }
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-[#db86ad]"
                   onClick={() => setShowPassword((current) => !current)}
@@ -155,11 +156,11 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
                 {isSubmitting ? (
                   <span className="inline-flex items-center gap-2">
                     <LoaderCircle className="h-4 w-4 animate-spin" />
-                    Connexion...
+                    {appCopy.login.submitting}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-2">
-                    LOGIN
+                    {appCopy.login.submit}
                     <ArrowRight className="h-4 w-4" />
                   </span>
                 )}
@@ -173,7 +174,7 @@ export function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
         <div className="relative h-full overflow-hidden rounded-[28px] flex flex-col justify-center bg-[#b2c2fa]">
           <Image
             src={HERO_IMAGE_SRC}
-            alt="Illustration login"
+            alt={appCopy.login.heroAlt}
             width={1100}
             height={1100}
             priority

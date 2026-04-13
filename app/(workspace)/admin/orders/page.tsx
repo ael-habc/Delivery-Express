@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { appCopy } from "@/lib/copy";
 import {
   formatMoney,
   ORDER_STATUS_BAR_CLASSES,
@@ -167,28 +168,30 @@ export default async function AdminOrdersPage({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
-            Commandes
+            {appCopy.adminOrders.title}
           </h2>
           <p className="text-sm text-gray-500">
-            Filtre par statut, montant et date avec vue d&apos;ensemble.
+            {appCopy.adminOrders.subtitle}
           </p>
         </div>
         <Button
           asChild
           className="rounded-lg bg-black px-4 py-2 text-white shadow-sm transition-all duration-200 hover:bg-gray-800"
         >
-          <Link href="/admin/orders/new">Creer une commande</Link>
+          <Link href="/admin/orders/new">{appCopy.adminOrders.create}</Link>
         </Button>
       </div>
 
       <Card className="rounded-2xl border border-gray-100 bg-white shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg text-gray-900">Filtres</CardTitle>
+          <CardTitle className="text-lg text-gray-900">
+            {appCopy.adminOrders.filters}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
             <Select name="status" defaultValue={params.status ?? ""}>
-              <option value="">Tous les statuts</option>
+              <option value="">{appCopy.adminOrders.allStatuses}</option>
               {Object.values(OrderStatus).map((value) => (
                 <option key={value} value={value}>
                   {ORDER_STATUS_LABELS[value]}
@@ -201,7 +204,7 @@ export default async function AdminOrdersPage({
               min="0"
               name="minAmount"
               defaultValue={params.minAmount ?? ""}
-              placeholder="Montant min"
+              placeholder={appCopy.adminOrders.minAmount}
             />
             <Input
               type="number"
@@ -209,7 +212,7 @@ export default async function AdminOrdersPage({
               min="0"
               name="maxAmount"
               defaultValue={params.maxAmount ?? ""}
-              placeholder="Montant max"
+              placeholder={appCopy.adminOrders.maxAmount}
             />
             <Input
               type="date"
@@ -223,10 +226,10 @@ export default async function AdminOrdersPage({
             />
             <div className="flex gap-2">
               <Button type="submit" className="flex-1 rounded-lg bg-black text-white hover:bg-gray-800">
-                Filtrer
+                {appCopy.adminOrders.filter}
               </Button>
               <Button asChild type="button" variant="outline" className="flex-1 rounded-lg">
-                <Link href="/admin/orders">Reset</Link>
+                <Link href="/admin/orders">{appCopy.adminOrders.reset}</Link>
               </Button>
             </div>
           </form>
@@ -234,11 +237,21 @@ export default async function AdminOrdersPage({
       </Card>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <SummaryCard label="Commandes visibles" value={String(orders.length)} />
-        <SummaryCard label="Montant total" value={formatMoney(totalAmount)} />
         <SummaryCard
-          label="Periode"
-          value={params.dateFrom || params.dateTo ? "Filtre actif" : "Toutes dates"}
+          label={appCopy.adminOrders.visibleOrders}
+          value={String(orders.length)}
+        />
+        <SummaryCard
+          label={appCopy.adminOrders.totalAmount}
+          value={formatMoney(totalAmount)}
+        />
+        <SummaryCard
+          label={appCopy.adminOrders.period}
+          value={
+            params.dateFrom || params.dateTo
+              ? appCopy.adminOrders.filterActive
+              : appCopy.adminOrders.allDates
+          }
         />
       </div>
 
@@ -246,7 +259,7 @@ export default async function AdminOrdersPage({
         <Card className="rounded-2xl border border-gray-100 bg-white shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg text-gray-900">
-              Repartition par statut
+              {appCopy.adminOrders.statusDistribution}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -273,7 +286,9 @@ export default async function AdminOrdersPage({
 
         <Card className="rounded-2xl border border-gray-100 bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg text-gray-900">Commandes par jour</CardTitle>
+            <CardTitle className="text-lg text-gray-900">
+              {appCopy.adminOrders.ordersByDay}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {dailyChartData.length > 0 ? (
@@ -298,7 +313,7 @@ export default async function AdminOrdersPage({
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-gray-200 p-8 text-center text-sm text-gray-500">
-                Aucune donnee journaliere pour cette plage.
+                {appCopy.adminOrders.noDailyData}
               </div>
             )}
           </CardContent>
@@ -307,21 +322,23 @@ export default async function AdminOrdersPage({
 
       <Card className="rounded-2xl border border-gray-100 bg-white shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg text-gray-900">Liste des commandes</CardTitle>
+          <CardTitle className="text-lg text-gray-900">
+            {appCopy.adminOrders.ordersList}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="hidden overflow-hidden rounded-2xl border border-gray-100 lg:block">
             <table className="min-w-full divide-y divide-gray-100 text-sm">
               <thead className="bg-gray-50 text-left text-gray-500">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Commande</th>
-                  <th className="px-4 py-3 font-medium">Client</th>
-                  <th className="px-4 py-3 font-medium">Quartier</th>
-                  <th className="px-4 py-3 font-medium">Montant</th>
-                  <th className="px-4 py-3 font-medium">Paiement</th>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Statut</th>
-                  <th className="px-4 py-3 font-medium">Livreur</th>
+                  <th className="px-4 py-3 font-medium">{appCopy.adminOrders.columns.order}</th>
+                  <th className="px-4 py-3 font-medium">{appCopy.adminOrders.columns.client}</th>
+                  <th className="px-4 py-3 font-medium">{appCopy.adminOrders.columns.quartier}</th>
+                  <th className="px-4 py-3 font-medium">{appCopy.adminOrders.columns.amount}</th>
+                  <th className="px-4 py-3 font-medium">{appCopy.adminOrders.columns.payment}</th>
+                  <th className="px-4 py-3 font-medium">{appCopy.adminOrders.columns.date}</th>
+                  <th className="px-4 py-3 font-medium">{appCopy.adminOrders.columns.status}</th>
+                  <th className="px-4 py-3 font-medium">{appCopy.adminOrders.columns.delivery}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 bg-white">
@@ -351,7 +368,7 @@ export default async function AdminOrdersPage({
                       <StatusBadge status={order.status} />
                     </td>
                     <td className="px-4 py-3 text-gray-700">
-                      {order.assignedTo?.name || "Non assigne"}
+                      {order.assignedTo?.name || appCopy.adminOrders.unassigned}
                     </td>
                   </tr>
                 ))}
@@ -377,13 +394,22 @@ export default async function AdminOrdersPage({
                   <StatusBadge status={order.status} />
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <Info label="Quartier" value={order.quartier || "-"} />
-                  <Info label="Montant" value={formatMoney(order.amount)} />
                   <Info
-                    label="Paiement"
+                    label={appCopy.adminOrders.columns.quartier}
+                    value={order.quartier || "-"}
+                  />
+                  <Info
+                    label={appCopy.adminOrders.columns.amount}
+                    value={formatMoney(order.amount)}
+                  />
+                  <Info
+                    label={appCopy.adminOrders.columns.payment}
                     value={PAYMENT_TYPE_LABELS[order.paymentType]}
                   />
-                  <Info label="Date" value={order.createdAt.toLocaleDateString("fr-MA")} />
+                  <Info
+                    label={appCopy.adminOrders.columns.date}
+                    value={order.createdAt.toLocaleDateString("fr-MA")}
+                  />
                 </div>
               </Link>
             ))}
@@ -391,7 +417,7 @@ export default async function AdminOrdersPage({
 
           {orders.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-gray-200 p-8 text-center text-sm text-gray-500">
-              Aucune commande ne correspond a ces filtres.
+              {appCopy.adminOrders.empty}
             </div>
           ) : null}
         </CardContent>

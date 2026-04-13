@@ -4,6 +4,7 @@ import { OrderCard } from "@/components/order-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireDeliveryUser } from "@/lib/auth";
+import { appCopy } from "@/lib/copy";
 import {
   ACTIVE_ORDER_STATUSES,
   ORDER_STATUS_LABELS,
@@ -36,18 +37,19 @@ export default async function DeliveryOrdersPage({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Espace livraison</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {appCopy.deliveryOrders.title}
+        </h2>
         <p className="text-muted-foreground">
-          Commandes assignees a {user.name}, pensees pour une utilisation rapide sur
-          mobile.
+          {appCopy.deliveryOrders.subtitle.replace("{name}", user.name ?? "")}
         </p>
       </div>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Filtres rapides</CardTitle>
+          <CardTitle>{appCopy.deliveryOrders.filters}</CardTitle>
           <Button asChild variant="outline">
-            <Link href="/delivery/orders">Reinitialiser</Link>
+            <Link href="/delivery/orders">{appCopy.deliveryOrders.reset}</Link>
           </Button>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
@@ -72,7 +74,7 @@ export default async function DeliveryOrdersPage({
         {orders.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-sm text-muted-foreground">
-              Aucune commande active pour ce filtre.
+              {appCopy.deliveryOrders.empty}
             </CardContent>
           </Card>
         ) : null}

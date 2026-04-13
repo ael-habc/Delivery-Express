@@ -1,6 +1,7 @@
 import { type Prisma, OrderEventType, OrderStatus, type PaymentType } from "@/src/generated/prisma";
 import { handleRouteError, jsonError, jsonSuccess } from "@/lib/api";
 import { getAuthSession } from "@/lib/auth";
+import { appCopy } from "@/lib/copy";
 import {
   ensureDeliveryUser,
   normalizeAmount,
@@ -161,7 +162,7 @@ export async function POST(request: Request) {
         events: {
           create: {
             type: OrderEventType.CONFIRMED,
-            note: "Commande confirmee",
+            note: appCopy.events.CONFIRMED,
             createdById: session.user.id,
           },
         },

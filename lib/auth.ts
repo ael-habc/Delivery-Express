@@ -6,6 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { redirect } from "next/navigation";
 
 import { ensureDefaultUsers } from "@/lib/default-users";
+import { appCopy } from "@/lib/copy";
 import { prisma } from "@/lib/prisma";
 import { UserRole, type User } from "@/src/generated/prisma";
 
@@ -26,8 +27,8 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        identifier: { label: "Identifier", type: "text" },
-        password: { label: "Password", type: "password" },
+        identifier: { label: appCopy.login.identifierLabel, type: "text" },
+        password: { label: appCopy.login.passwordLabel, type: "password" },
       },
       async authorize(credentials) {
         await ensureDefaultUsers();

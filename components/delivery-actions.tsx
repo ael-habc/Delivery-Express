@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
+import { appCopy } from "@/lib/copy";
 import {
   getAllowedEventsForStatus,
   ORDER_STATUS_LABELS,
@@ -12,14 +13,26 @@ import {
 import { OrderEventType, type OrderStatus } from "@/src/generated/prisma";
 
 const ACTIONS = [
-  { type: OrderEventType.CALLED_CUSTOMER, label: "Client appelé" },
+  {
+    type: OrderEventType.CALLED_CUSTOMER,
+    label: appCopy.deliveryActions.actions.CALLED_CUSTOMER,
+  },
   {
     type: OrderEventType.WHATSAPP_ADDRESS_RECEIVED,
-    label: "Adresse reçue WhatsApp",
+    label: appCopy.deliveryActions.actions.WHATSAPP_ADDRESS_RECEIVED,
   },
-  { type: OrderEventType.OUT_FOR_DELIVERY, label: "En livraison" },
-  { type: OrderEventType.DELIVERED, label: "Livrée" },
-  { type: OrderEventType.CANCELLED, label: "Annulée" },
+  {
+    type: OrderEventType.OUT_FOR_DELIVERY,
+    label: appCopy.deliveryActions.actions.OUT_FOR_DELIVERY,
+  },
+  {
+    type: OrderEventType.DELIVERED,
+    label: appCopy.deliveryActions.actions.DELIVERED,
+  },
+  {
+    type: OrderEventType.CANCELLED,
+    label: appCopy.deliveryActions.actions.CANCELLED,
+  },
 ] as const;
 
 const DELIVERY_STEP_ORDER = [
@@ -36,11 +49,7 @@ const STATUS_STEP_INDEX: Partial<Record<OrderStatus, number>> = {
   DELIVERED: 3,
 };
 
-const CANCEL_REASONS = [
-  "Client Injoignable",
-  "Commande refusée",
-  "Commande reportée",
-] as const;
+const CANCEL_REASONS = appCopy.deliveryActions.cancelReasons;
 
 export function DeliveryActions({
   orderId,
@@ -78,7 +87,9 @@ export function DeliveryActions({
 
     if (!response.ok || !result.ok) {
       setError(
-        result.details?.join(" ") || result.error || "Action impossible.",
+        result.details?.join(" ") ||
+          result.error ||
+          appCopy.deliveryActions.actionError,
       );
       setIsSubmitting(false);
       return;
@@ -141,13 +152,13 @@ export function DeliveryActions({
       {showCancelReason ? (
         <div className="space-y-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-4">
           <p className="font-medium text-destructive">
-            Motif d&apos;annulation obligatoire
+            {appCopy.deliveryActions.cancelReasonRequired}
           </p>
           <Select
             value={cancelReason}
             onChange={(event) => setCancelReason(event.target.value)}
           >
-            <option value="">Choisir un motif</option>
+            <option value="">{appCopy.deliveryActions.chooseReason}</option>
             {CANCEL_REASONS.map((reason) => (
               <option key={reason} value={reason}>
                 {reason}
@@ -163,7 +174,7 @@ export function DeliveryActions({
                 submitEvent(OrderEventType.CANCELLED, cancelReason)
               }
             >
-              Confirmer l&apos;annulation
+              {appCopy.deliveryActions.confirmCancel}
             </Button>
             <Button
               type="button"
@@ -173,7 +184,7 @@ export function DeliveryActions({
                 setCancelReason("");
               }}
             >
-              Fermer
+              {appCopy.deliveryActions.close}
             </Button>
           </div>
         </div>
@@ -188,7 +199,10 @@ export function DeliveryActions({
       {allowedEvents.length === 1 &&
       allowedEvents[0] === OrderEventType.NOTE ? (
         <p className="rounded-2xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
-          Statut final atteint: {ORDER_STATUS_LABELS[status]}.
+          {appCopy.deliveryActions.finalStatus.replace(
+            "{status}",
+            ORDER_STATUS_LABELS[status],
+          )}
         </p>
       ) : null}
     </div>

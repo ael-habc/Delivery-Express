@@ -5,6 +5,7 @@ import { DeliveryNotifications } from "@/components/delivery-notifications";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { requireUser } from "@/lib/auth";
+import { appCopy } from "@/lib/copy";
 import { UserRole } from "@/src/generated/prisma";
 
 export default async function WorkspaceLayout({
@@ -16,10 +17,10 @@ export default async function WorkspaceLayout({
   const links =
     user.role === UserRole.ADMIN
       ? [
-          { href: "/admin/dashboard", label: "Dashboard" },
-          { href: "/admin/orders", label: "Commandes" },
+          { href: "/admin/dashboard", label: appCopy.nav.dashboard },
+          { href: "/admin/orders", label: appCopy.nav.orders },
         ]
-      : [{ href: "/delivery/orders", label: "Mes commandes" }];
+      : [{ href: "/delivery/orders", label: appCopy.nav.myOrders }];
 
   return (
     <div className="min-h-screen">
@@ -28,7 +29,7 @@ export default async function WorkspaceLayout({
           <div>
             <Image
               src="/logo.png"
-              alt="Logo"
+              alt={appCopy.app.logoAlt}
               width={128}
               height={32}
               className="h-8 w-auto object-contain"
@@ -36,8 +37,8 @@ export default async function WorkspaceLayout({
             />
             <h1 className="text-lg font-semibold">
               {user.role === UserRole.ADMIN
-                ? "Admin"
-                : `livraison - ${user.name}`}
+                ? appCopy.app.adminTitle
+                : `${appCopy.app.deliveryTitlePrefix}${user.name}`}
             </h1>
           </div>
           <nav className="flex items-center gap-2">

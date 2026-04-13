@@ -1,0 +1,218 @@
+{
+  "app": {
+    "logoAlt": "Logo",
+    "adminTitle": "Admin",
+    "deliveryTitlePrefix": "Livraison - "
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "orders": "Commandes",
+    "myOrders": "Mes commandes",
+    "logout": "Se déconnecter",
+    "logoutAria": "Se déconnecter"
+  },
+  "login": {
+    "title": "Se connecter",
+    "identifierLabel": "Email / Identifiant",
+    "identifierPlaceholder": "login@gmail.com",
+    "passwordLabel": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "hidePassword": "Masquer le mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "invalidCredentials": "Identifiant ou mot de passe invalide.",
+    "submitting": "Connexion...",
+    "submit": "Se connecter",
+    "heroAlt": "Illustration de connexion"
+  },
+  "notifications": {
+    "buttonAria": "Notifications de livraison",
+    "buttonLabel": "Notifications",
+    "title": "Nouvelle commande assignée",
+    "singleBody": "Une commande vient d'être ajoutée à ton espace.",
+    "multipleBody": "{count} commandes viennent d'être ajoutées à ton espace.",
+    "closeAria": "Fermer la notification",
+    "enableSound": "Activer le son sur mobile"
+  },
+  "status": {
+    "CONFIRMED": "Confirmée",
+    "CALLED_CUSTOMER": "Client appelé",
+    "WHATSAPP_ADDRESS_RECEIVED": "Adresse reçue via WhatsApp",
+    "OUT_FOR_DELIVERY": "En livraison",
+    "DELIVERED": "Livrée",
+    "CANCELLED": "Annulée"
+  },
+  "payment": {
+    "COD": "Paiement à la livraison",
+    "CMI": "CMI",
+    "OTHER": "Autre"
+  },
+  "events": {
+    "CONFIRMED": "Commande confirmée",
+    "CALLED_CUSTOMER": "Client appelé",
+    "WHATSAPP_ADDRESS_RECEIVED": "Adresse reçue sur WhatsApp",
+    "OUT_FOR_DELIVERY": "En livraison",
+    "DELIVERED": "Commande livrée",
+    "CANCELLED": "Commande annulée",
+    "NOTE": "Note"
+  },
+  "deliveryActions": {
+    "actions": {
+      "CALLED_CUSTOMER": "Client appelé",
+      "WHATSAPP_ADDRESS_RECEIVED": "Adresse reçue via WhatsApp",
+      "OUT_FOR_DELIVERY": "En livraison",
+      "DELIVERED": "Livrée",
+      "CANCELLED": "Annulée"
+    },
+    "cancelReasons": [
+      "Client injoignable",
+      "Commande refusée",
+      "Commande reportée"
+    ],
+    "cancelReasonRequired": "Motif d'annulation obligatoire",
+    "chooseReason": "Choisir un motif",
+    "confirmCancel": "Confirmer l'annulation",
+    "close": "Fermer",
+    "actionError": "Action impossible.",
+    "finalStatus": "Statut final atteint : {status}."
+  },
+  "orderForm": {
+    "fields": {
+      "orderNumber": "Numéro de commande",
+      "customerName": "Nom du client",
+      "phone": "Téléphone",
+      "quartier": "Quartier",
+      "amount": "Montant",
+      "paymentType": "Type de paiement",
+      "assignedTo": "Livreur assigné",
+      "address": "Adresse",
+      "note": "Note"
+    },
+    "placeholders": {
+      "orderNumber": "CMD-001",
+      "customerName": "Nom complet",
+      "phone": "06...",
+      "quartier": "Choisir un quartier",
+      "address": "Repère, immeuble, étage...",
+      "note": "Informations internes"
+    },
+    "unassigned": "Non assigné",
+    "error": "Une erreur est survenue.",
+    "saving": "Enregistrement...",
+    "create": "Créer la commande",
+    "update": "Mettre à jour"
+  },
+  "orderNote": {
+    "placeholder": "Ajouter une note interne...",
+    "error": "Impossible d'ajouter la note.",
+    "submitting": "Ajout...",
+    "submit": "Ajouter une note"
+  },
+  "orderCard": {
+    "phone": "Téléphone",
+    "quartier": "Quartier",
+    "amount": "Montant",
+    "payment": "Paiement",
+    "delivery": "Livreur",
+    "unassigned": "Non assigné",
+    "emptyValue": "-"
+  },
+  "timeline": {
+    "empty": "Aucun événement pour le moment."
+  },
+  "adminDashboard": {
+    "title": "Tableau de bord admin",
+    "subtitle": "Vue rapide sur le flux du jour et les commandes récentes.",
+    "newOrder": "Nouvelle commande",
+    "filters": {
+      "all": "Total des commandes",
+      "confirmed": "Confirmées",
+      "outForDelivery": "En livraison",
+      "delivered": "Livrées",
+      "cancelled": "Annulées"
+    },
+    "filteredOrders": "Commandes filtrées",
+    "recentOrders": "Commandes récentes",
+    "activeFilter": "Filtre actif :",
+    "viewAll": "Voir tout",
+    "quartier": "Quartier",
+    "payment": "Paiement",
+    "amount": "Montant",
+    "delivery": "Livreur",
+    "deliveryAddress": "Livreur / Adresse",
+    "address": "Adresse",
+    "unassigned": "Non assigné",
+    "empty": "Aucune commande pour ce filtre."
+  },
+  "adminOrders": {
+    "title": "Commandes",
+    "subtitle": "Filtre par statut, montant et date avec vue d'ensemble.",
+    "create": "Créer une commande",
+    "filters": "Filtres",
+    "allStatuses": "Tous les statuts",
+    "minAmount": "Montant minimum",
+    "maxAmount": "Montant maximum",
+    "filter": "Filtrer",
+    "reset": "Réinitialiser",
+    "visibleOrders": "Commandes visibles",
+    "totalAmount": "Montant total",
+    "period": "Période",
+    "filterActive": "Filtre actif",
+    "allDates": "Toutes les dates",
+    "statusDistribution": "Répartition par statut",
+    "ordersByDay": "Commandes par jour",
+    "noDailyData": "Aucune donnée journalière pour cette période.",
+    "ordersList": "Liste des commandes",
+    "columns": {
+      "order": "Commande",
+      "client": "Client",
+      "quartier": "Quartier",
+      "amount": "Montant",
+      "payment": "Paiement",
+      "date": "Date",
+      "status": "Statut",
+      "delivery": "Livreur"
+    },
+    "unassigned": "Non assigné",
+    "empty": "Aucune commande ne correspond à ces filtres."
+  },
+  "newOrder": {
+    "title": "Nouvelle commande",
+    "subtitle": "Crée une commande confirmée et initialise sa timeline.",
+    "details": "Détails de la commande"
+  },
+  "adminOrderDetail": {
+    "edit": "Modifier la commande",
+    "addNote": "Ajouter une note",
+    "quickInfo": "Infos rapides",
+    "phone": "Téléphone",
+    "quartier": "Quartier",
+    "address": "Adresse",
+    "note": "Note",
+    "payment": "Paiement",
+    "delivery": "Livreur",
+    "unassigned": "Non assigné",
+    "timeline": "Timeline",
+    "emptyValue": "-"
+  },
+  "deliveryOrders": {
+    "title": "Espace livraison",
+    "subtitle": "Commandes assignées à {name}, pensées pour une utilisation rapide sur mobile.",
+    "filters": "Filtres rapides",
+    "reset": "Réinitialiser",
+    "empty": "Aucune commande active pour ce filtre."
+  },
+  "deliveryOrderDetail": {
+    "call": "Appeler",
+    "openWhatsapp": "Ouvrir WhatsApp",
+    "usefulInfo": "Infos utiles",
+    "phone": "Téléphone",
+    "quartier": "Quartier",
+    "address": "Adresse",
+    "note": "Note",
+    "amount": "Montant",
+    "payment": "Paiement",
+    "quickActions": "Actions rapides",
+    "timeline": "Timeline",
+    "emptyValue": "-"
+  }
+}

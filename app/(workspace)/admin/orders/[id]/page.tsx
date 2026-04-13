@@ -5,6 +5,7 @@ import { OrderNoteForm } from "@/components/order-note-form";
 import { OrderTimeline } from "@/components/order-timeline";
 import { StatusBadge } from "@/components/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { appCopy } from "@/lib/copy";
 import { getDeliveryUsers, orderDetailsInclude, PAYMENT_TYPE_LABELS } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
 
@@ -34,7 +35,9 @@ export default async function AdminOrderDetailPage({
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             {order.orderNumber}
           </p>
-          <h2 className="text-2xl font-semibold tracking-tight">{order.customerName}</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {order.customerName}
+          </h2>
         </div>
         <StatusBadge status={order.status} />
       </div>
@@ -43,7 +46,7 @@ export default async function AdminOrderDetailPage({
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Modifier la commande</CardTitle>
+              <CardTitle>{appCopy.adminOrderDetail.edit}</CardTitle>
             </CardHeader>
             <CardContent>
               <OrderForm
@@ -67,7 +70,7 @@ export default async function AdminOrderDetailPage({
 
           <Card>
             <CardHeader>
-              <CardTitle>Ajouter une note</CardTitle>
+              <CardTitle>{appCopy.adminOrderDetail.addNote}</CardTitle>
             </CardHeader>
             <CardContent>
               <OrderNoteForm orderId={order.id} />
@@ -78,24 +81,36 @@ export default async function AdminOrderDetailPage({
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Infos rapides</CardTitle>
+              <CardTitle>{appCopy.adminOrderDetail.quickInfo}</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 text-sm">
-              <Info label="Téléphone" value={order.phone} />
-              <Info label="Quartier" value={order.quartier || "—"} />
-              <Info label="Adresse" value={order.address || "—"} />
-              <Info label="Note" value={order.note || "—"} />
-              <Info label="Paiement" value={PAYMENT_TYPE_LABELS[order.paymentType]} />
+              <Info label={appCopy.adminOrderDetail.phone} value={order.phone} />
               <Info
-                label="Livreur"
-                value={order.assignedTo?.name || "Non assigné"}
+                label={appCopy.adminOrderDetail.quartier}
+                value={order.quartier || appCopy.adminOrderDetail.emptyValue}
+              />
+              <Info
+                label={appCopy.adminOrderDetail.address}
+                value={order.address || appCopy.adminOrderDetail.emptyValue}
+              />
+              <Info
+                label={appCopy.adminOrderDetail.note}
+                value={order.note || appCopy.adminOrderDetail.emptyValue}
+              />
+              <Info
+                label={appCopy.adminOrderDetail.payment}
+                value={PAYMENT_TYPE_LABELS[order.paymentType]}
+              />
+              <Info
+                label={appCopy.adminOrderDetail.delivery}
+                value={order.assignedTo?.name || appCopy.adminOrderDetail.unassigned}
               />
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Timeline</CardTitle>
+              <CardTitle>{appCopy.adminOrderDetail.timeline}</CardTitle>
             </CardHeader>
             <CardContent>
               <OrderTimeline events={order.events} />

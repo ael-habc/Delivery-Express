@@ -3,6 +3,7 @@ import Link from "next/link";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
+import { appCopy } from "@/lib/copy";
 import { formatMoney, PAYMENT_TYPE_LABELS } from "@/lib/order-meta";
 import { prisma } from "@/lib/prisma";
 import { getDashboardStats } from "@/lib/orders";
@@ -11,31 +12,31 @@ import { OrderStatus } from "@/src/generated/prisma";
 const DASHBOARD_FILTERS = [
   {
     key: "all",
-    label: "Total commandes",
+    label: appCopy.adminDashboard.filters.all,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.totalOrders,
     href: "/admin/dashboard",
   },
   {
     key: OrderStatus.CONFIRMED,
-    label: "Confirmees",
+    label: appCopy.adminDashboard.filters.confirmed,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.confirmed,
     href: `/admin/dashboard?status=${OrderStatus.CONFIRMED}`,
   },
   {
     key: OrderStatus.OUT_FOR_DELIVERY,
-    label: "En livraison",
+    label: appCopy.adminDashboard.filters.outForDelivery,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.outForDelivery,
     href: `/admin/dashboard?status=${OrderStatus.OUT_FOR_DELIVERY}`,
   },
   {
     key: OrderStatus.DELIVERED,
-    label: "Livrees",
+    label: appCopy.adminDashboard.filters.delivered,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.delivered,
     href: `/admin/dashboard?status=${OrderStatus.DELIVERED}`,
   },
   {
     key: OrderStatus.CANCELLED,
-    label: "Annulees",
+    label: appCopy.adminDashboard.filters.cancelled,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.cancelled,
     href: `/admin/dashboard?status=${OrderStatus.CANCELLED}`,
   },
@@ -81,10 +82,10 @@ export default async function AdminDashboardPage({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold text-gray-900">
-              Dashboard admin
+              {appCopy.adminDashboard.title}
             </h2>
             <p className="text-sm text-gray-500">
-              Vue rapide sur le flux du jour et les commandes recentes.
+              {appCopy.adminDashboard.subtitle}
             </p>
           </div>
 
@@ -92,7 +93,7 @@ export default async function AdminDashboardPage({
             asChild
             className="rounded-lg bg-black px-4 py-2 text-white shadow-sm transition-all duration-200 hover:bg-gray-800"
           >
-            <Link href="/admin/orders/new">Nouvelle commande</Link>
+            <Link href="/admin/orders/new">{appCopy.adminDashboard.newOrder}</Link>
           </Button>
         </div>
 
@@ -116,11 +117,14 @@ export default async function AdminDashboardPage({
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
               <h3 className="text-lg font-semibold text-gray-900">
-                {activeStatus ? "Commandes filtrees" : "Commandes recentes"}
+                {activeStatus
+                  ? appCopy.adminDashboard.filteredOrders
+                  : appCopy.adminDashboard.recentOrders}
               </h3>
               {activeStatus ? (
                 <p className="text-sm text-gray-500">
-                  Filtre actif: <StatusBadge status={activeStatus} />
+                  {appCopy.adminDashboard.activeFilter}{" "}
+                  <StatusBadge status={activeStatus} />
                 </p>
               ) : null}
             </div>
@@ -128,7 +132,7 @@ export default async function AdminDashboardPage({
               href="/admin/orders"
               className="text-sm text-gray-500 transition-colors duration-200 hover:text-black"
             >
-              Voir tout
+              {appCopy.adminDashboard.viewAll}
             </Link>
           </div>
 
@@ -149,26 +153,36 @@ export default async function AdminDashboardPage({
                   
                   <div className="grid gap-2 text-sm text-gray-500 sm:grid-cols-2">
                     <p>
-                      <span className="font-medium text-gray-700">Quartier:</span>{" "}
+                      <span className="font-medium text-gray-700">
+                        {appCopy.adminDashboard.quartier}:
+                      </span>{" "}
                       {order.quartier || "-"}
                     </p>
                     <p>
-                      <span className="font-medium text-gray-700">Paiement:</span>{" "}
+                      <span className="font-medium text-gray-700">
+                        {appCopy.adminDashboard.payment}:
+                      </span>{" "}
                       {PAYMENT_TYPE_LABELS[order.paymentType]}
                     </p>
                     <p>
-                      <span className="font-medium text-gray-700">Montant:</span>{" "}
+                      <span className="font-medium text-gray-700">
+                        {appCopy.adminDashboard.amount}:
+                      </span>{" "}
                       {formatMoney(order.amount)}
                     </p>
                     <p>
-                      <span className="font-medium text-gray-700">Livreur:</span>{" "}
-                      {order.assignedTo?.name || "Non assigne"}
+                      <span className="font-medium text-gray-700">
+                        {appCopy.adminDashboard.delivery}:
+                      </span>{" "}
+                      {order.assignedTo?.name || appCopy.adminDashboard.unassigned}
                     </p>
                   </div>
 
                   {order.address ? (
                     <p className="line-clamp-2 text-sm text-gray-500">
-                      <span className="font-medium text-gray-700">Adresse:</span>{" "}
+                      <span className="font-medium text-gray-700">
+                        {appCopy.adminDashboard.address}:
+                      </span>{" "}
                       {order.address}
                     </p>
                   ) : null}
@@ -194,23 +208,33 @@ export default async function AdminDashboardPage({
                   </div>
 
                   <div className="min-w-0 text-sm text-gray-500">
-                    <p className="font-medium text-gray-700">Quartier</p>
+                    <p className="font-medium text-gray-700">
+                      {appCopy.adminDashboard.quartier}
+                    </p>
                     <p className="truncate">{order.quartier || "-"}</p>
                   </div>
 
                   <div className="min-w-0 text-sm text-gray-500">
-                    <p className="font-medium text-gray-700">Paiement</p>
+                    <p className="font-medium text-gray-700">
+                      {appCopy.adminDashboard.payment}
+                    </p>
                     <p>{PAYMENT_TYPE_LABELS[order.paymentType]}</p>
                   </div>
 
                   <div className="min-w-0 text-sm text-gray-500">
-                    <p className="font-medium text-gray-700">Montant</p>
+                    <p className="font-medium text-gray-700">
+                      {appCopy.adminDashboard.amount}
+                    </p>
                     <p>{formatMoney(order.amount)}</p>
                   </div>
 
                   <div className="min-w-0 text-sm text-gray-500">
-                    <p className="font-medium text-gray-700">Livreur / Adresse</p>
-                    <p className="truncate">{order.assignedTo?.name || "Non assigne"}</p>
+                    <p className="font-medium text-gray-700">
+                      {appCopy.adminDashboard.deliveryAddress}
+                    </p>
+                    <p className="truncate">
+                      {order.assignedTo?.name || appCopy.adminDashboard.unassigned}
+                    </p>
                     <p className="truncate text-xs text-gray-400">
                       {order.address || "-"}
                     </p>
@@ -231,7 +255,7 @@ export default async function AdminDashboardPage({
 
             {recentOrders.length === 0 ? (
               <div className="border border-dashed border-gray-200 p-6 text-sm text-gray-500">
-                Aucune commande pour ce filtre.
+                {appCopy.adminDashboard.empty}
               </div>
             ) : null}
           </div>

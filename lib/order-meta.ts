@@ -1,4 +1,5 @@
 import type { OrderEventType, OrderStatus, PaymentType } from "@/src/generated/prisma";
+import { appCopy } from "@/lib/copy";
 
 export const ACTIVE_ORDER_STATUSES = [
   "CONFIRMED",
@@ -13,12 +14,12 @@ export const FINAL_ORDER_STATUSES = [
 ] as const satisfies ReadonlyArray<OrderStatus>;
 
 export const ORDER_STATUS_LABELS = {
-  CONFIRMED: "Confirmee",
-  CALLED_CUSTOMER: "Client appele",
-  WHATSAPP_ADDRESS_RECEIVED: "Adresse recue WhatsApp",
-  OUT_FOR_DELIVERY: "En livraison",
-  DELIVERED: "Livree",
-  CANCELLED: "Annulee",
+  CONFIRMED: appCopy.status.CONFIRMED,
+  CALLED_CUSTOMER: appCopy.status.CALLED_CUSTOMER,
+  WHATSAPP_ADDRESS_RECEIVED: appCopy.status.WHATSAPP_ADDRESS_RECEIVED,
+  OUT_FOR_DELIVERY: appCopy.status.OUT_FOR_DELIVERY,
+  DELIVERED: appCopy.status.DELIVERED,
+  CANCELLED: appCopy.status.CANCELLED,
 } satisfies Record<OrderStatus, string>;
 
 export const ORDER_STATUS_COLOR_CLASSES = {
@@ -40,19 +41,19 @@ export const ORDER_STATUS_BAR_CLASSES = {
 } satisfies Record<OrderStatus, string>;
 
 export const PAYMENT_TYPE_LABELS = {
-  COD: "COD",
-  CMI: "CMI",
-  OTHER: "Autre",
+  COD: appCopy.payment.COD,
+  CMI: appCopy.payment.CMI,
+  OTHER: appCopy.payment.OTHER,
 } satisfies Record<PaymentType, string>;
 
 export const ORDER_EVENT_LABELS = {
-  CONFIRMED: "Commande confirmee",
-  CALLED_CUSTOMER: "Client appele",
-  WHATSAPP_ADDRESS_RECEIVED: "Adresse recue sur WhatsApp",
-  OUT_FOR_DELIVERY: "En livraison",
-  DELIVERED: "Commande livree",
-  CANCELLED: "Commande annulee",
-  NOTE: "Note",
+  CONFIRMED: appCopy.events.CONFIRMED,
+  CALLED_CUSTOMER: appCopy.events.CALLED_CUSTOMER,
+  WHATSAPP_ADDRESS_RECEIVED: appCopy.events.WHATSAPP_ADDRESS_RECEIVED,
+  OUT_FOR_DELIVERY: appCopy.events.OUT_FOR_DELIVERY,
+  DELIVERED: appCopy.events.DELIVERED,
+  CANCELLED: appCopy.events.CANCELLED,
+  NOTE: appCopy.events.NOTE,
 } satisfies Record<OrderEventType, string>;
 
 export function getAllowedEventsForStatus(status: OrderStatus) {
