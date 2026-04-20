@@ -12,11 +12,12 @@ import {
   ORDER_STATUS_LABELS,
   PAYMENT_TYPE_LABELS,
 } from "@/lib/order-meta";
-import { parseStatus } from "@/lib/orders";
+import { buildOrderSearchWhere, parseStatus } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus, type Prisma } from "@/src/generated/prisma";
 
 type OrdersSearchParams = {
+  q?: string;
   status?: string;
   minAmount?: string;
   maxAmount?: string;
@@ -45,11 +46,16 @@ function getLocalDateKey(date: Date) {
 
 function buildOrdersWhere(params: OrdersSearchParams): Prisma.OrderWhereInput {
   const where: Prisma.OrderWhereInput = {};
+  const searchWhere = buildOrderSearchWhere(params.q);
   const status = parseStatus(params.status ?? null);
   const minAmount = parseAmount(params.minAmount);
   const maxAmount = parseAmount(params.maxAmount);
   const dateFrom = parseDateBoundary(params.dateFrom);
   const dateTo = parseDateBoundary(params.dateTo, true);
+
+  if (searchWhere) {
+    where.AND = [searchWhere];
+  }
 
   if (status && status !== "invalid") {
     where.status = status;
@@ -164,7 +170,7 @@ export default async function AdminOrdersPage({
   const maxStatusCount = Math.max(...statusChartData.map((item) => item.count), 1);
 
   return (
-    <div className="space-y-6 bg-gray-50">
+    <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -190,6 +196,13 @@ export default async function AdminOrdersPage({
         </CardHeader>
         <CardContent>
           <form className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+            <Input
+              type="search"
+              name="q"
+              defaultValue={params.q ?? ""}
+              placeholder={appCopy.adminOrders.searchPlaceholder}
+              className="md:col-span-2 xl:col-span-2"
+            />
             <Select name="status" defaultValue={params.status ?? ""}>
               <option value="">{appCopy.adminOrders.allStatuses}</option>
               {Object.values(OrderStatus).map((value) => (
@@ -224,11 +237,11 @@ export default async function AdminOrdersPage({
               name="dateTo"
               defaultValue={params.dateTo ?? ""}
             />
-            <div className="flex gap-2">
-              <Button type="submit" className="flex-1 rounded-lg bg-black text-white hover:bg-gray-800">
+            <div className="flex justify-end gap-2 md:col-span-2 xl:col-span-6">
+              <Button type="submit" className="min-w-32 rounded-lg bg-black text-white hover:bg-gray-800">
                 {appCopy.adminOrders.filter}
               </Button>
-              <Button asChild type="button" variant="outline" className="flex-1 rounded-lg">
+              <Button asChild type="button" variant="outline" className="min-w-32 rounded-lg">
                 <Link href="/admin/orders">{appCopy.adminOrders.reset}</Link>
               </Button>
             </div>

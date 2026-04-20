@@ -3,10 +3,11 @@ import Link from "next/link";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { appCopy } from "@/lib/copy";
 import { formatMoney, PAYMENT_TYPE_LABELS } from "@/lib/order-meta";
 import { prisma } from "@/lib/prisma";
-import { getDashboardStats } from "@/lib/orders";
+import { buildOrderSearchWhere, getDashboardStats } from "@/lib/orders";
 import { OrderStatus } from "@/src/generated/prisma";
 
 const DASHBOARD_FILTERS = [
@@ -14,31 +15,26 @@ const DASHBOARD_FILTERS = [
     key: "all",
     label: appCopy.adminDashboard.filters.all,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.totalOrders,
-    href: "/admin/dashboard",
   },
   {
     key: OrderStatus.CONFIRMED,
     label: appCopy.adminDashboard.filters.confirmed,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.confirmed,
-    href: `/admin/dashboard?status=${OrderStatus.CONFIRMED}`,
   },
   {
     key: OrderStatus.OUT_FOR_DELIVERY,
     label: appCopy.adminDashboard.filters.outForDelivery,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.outForDelivery,
-    href: `/admin/dashboard?status=${OrderStatus.OUT_FOR_DELIVERY}`,
   },
   {
     key: OrderStatus.DELIVERED,
     label: appCopy.adminDashboard.filters.delivered,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.delivered,
-    href: `/admin/dashboard?status=${OrderStatus.DELIVERED}`,
   },
   {
     key: OrderStatus.CANCELLED,
     label: appCopy.adminDashboard.filters.cancelled,
     getValue: (stats: Awaited<ReturnType<typeof getDashboardStats>>) => stats.cancelled,
-    href: `/admin/dashboard?status=${OrderStatus.CANCELLED}`,
   },
 ] as const;
 
@@ -52,19 +48,47 @@ function parseDashboardStatus(value?: string) {
     : undefined;
 }
 
+function getDashboardHref(status?: OrderStatus, query?: string) {
+  const params = new URLSearchParams();
+  const q = query?.trim();
+
+  if (status) {
+    params.set("status", status);
+  }
+
+  if (q) {
+    params.set("q", q);
+  }
+
+  const queryString = params.toString();
+  return queryString ? `/admin/dashboard?${queryString}` : "/admin/dashboard";
+}
+
 export default async function AdminDashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ q?: string; status?: string }>;
 }) {
   const params = await searchParams;
   const activeStatus = parseDashboardStatus(params.status);
+  const searchWhere = buildOrderSearchWhere(params.q);
+  const ordersHeading = params.q
+    ? appCopy.adminDashboard.searchResults
+    : activeStatus
+      ? appCopy.adminDashboard.filteredOrders
+      : appCopy.adminDashboard.recentOrders;
+  const allOrdersHref = params.q
+    ? `/admin/orders?q=${encodeURIComponent(params.q)}`
+    : "/admin/orders";
 
   const [stats, recentOrders] = await Promise.all([
     getDashboardStats(),
     prisma.order.findMany({
-      where: activeStatus ? { status: activeStatus } : undefined,
-      take: 5,
+      where: {
+        ...(activeStatus ? { status: activeStatus } : {}),
+        ...(searchWhere ? { AND: [searchWhere] } : {}),
+      },
+      take: searchWhere ? 20 : 5,
       orderBy: { createdAt: "desc" },
       include: {
         assignedTo: {
@@ -103,7 +127,10 @@ export default async function AdminDashboardPage({
               key={filter.key}
               label={filter.label}
               value={filter.getValue(stats)}
-              href={filter.href}
+              href={getDashboardHref(
+                filter.key === "all" ? undefined : filter.key,
+                params.q
+              )}
               active={
                 filter.key === "all"
                   ? !activeStatus
@@ -114,12 +141,33 @@ export default async function AdminDashboardPage({
         </div>
 
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <form className="flex flex-col gap-3 sm:flex-row">
+            {activeStatus ? (
+              <input type="hidden" name="status" value={activeStatus} />
+            ) : null}
+            <Input
+              type="search"
+              name="q"
+              defaultValue={params.q ?? ""}
+              placeholder={appCopy.adminDashboard.searchPlaceholder}
+              className="sm:flex-1"
+            />
+            <Button type="submit" className="sm:min-w-32">
+              {appCopy.adminDashboard.search}
+            </Button>
+            <Button asChild type="button" variant="outline" className="sm:min-w-32">
+              <Link href={getDashboardHref(activeStatus)}>
+                {appCopy.adminDashboard.clearSearch}
+              </Link>
+            </Button>
+          </form>
+        </section>
+
+        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
               <h3 className="text-lg font-semibold text-gray-900">
-                {activeStatus
-                  ? appCopy.adminDashboard.filteredOrders
-                  : appCopy.adminDashboard.recentOrders}
+                {ordersHeading}
               </h3>
               {activeStatus ? (
                 <p className="text-sm text-gray-500">
@@ -129,7 +177,7 @@ export default async function AdminDashboardPage({
               ) : null}
             </div>
             <Link
-              href="/admin/orders"
+              href={allOrdersHref}
               className="text-sm text-gray-500 transition-colors duration-200 hover:text-black"
             >
               {appCopy.adminDashboard.viewAll}

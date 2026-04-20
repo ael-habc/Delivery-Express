@@ -21,6 +21,11 @@ export const DEFAULT_APP_USERS: readonly DefaultAppUser[] = [
     role: APP_ROLES.ADMIN,
   },
   {
+    name: "Chaimaa",
+    email: "chaimaa@delivery.local",
+    role: APP_ROLES.ADMIN,
+  },
+  {
     name: "Yahya",
     email: "yahya@delivery.local",
     role: APP_ROLES.ADMIN,
@@ -34,6 +39,8 @@ export const DEFAULT_APP_USERS: readonly DefaultAppUser[] = [
     name: "Hamza",
     email: "hamza@delivery.local",
     role: APP_ROLES.DELIVERY,
+    legacyEmails: ["hamza@delivery.local"],
+    legacyNames: ["Hamza"],
   },
   {
     name: "Othaman",

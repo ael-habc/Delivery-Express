@@ -3,6 +3,7 @@ import { handleRouteError, jsonError, jsonSuccess } from "@/lib/api";
 import { getAuthSession } from "@/lib/auth";
 import { appCopy } from "@/lib/copy";
 import {
+  buildOrderSearchWhere,
   ensureDeliveryUser,
   normalizeAmount,
   normalizeRequiredString,
@@ -27,12 +28,18 @@ export async function GET(request: Request) {
     const maxAmount = searchParams.get("maxAmount");
     const dateFrom = searchParams.get("dateFrom");
     const dateTo = searchParams.get("dateTo");
+    const query = searchParams.get("q");
 
     if (status === "invalid") {
       return jsonError("Invalid status filter.", 400);
     }
 
     const where: Prisma.OrderWhereInput = {};
+    const searchWhere = buildOrderSearchWhere(query);
+
+    if (searchWhere) {
+      where.AND = [searchWhere];
+    }
 
     if (status) {
       where.status = status;

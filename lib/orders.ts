@@ -119,6 +119,44 @@ export function parseStatus(
     : "invalid";
 }
 
+export function normalizeSearchTerm(value: string | null | undefined) {
+  const term = value?.trim();
+  return term ? term : undefined;
+}
+
+export function buildOrderSearchWhere(
+  value: string | null | undefined
+): Prisma.OrderWhereInput | undefined {
+  const term = normalizeSearchTerm(value);
+
+  if (!term) {
+    return undefined;
+  }
+
+  const contains = {
+    contains: term,
+    mode: "insensitive" as const,
+  };
+
+  return {
+    OR: [
+      { orderNumber: contains },
+      { customerName: contains },
+      { phone: contains },
+      { quartier: contains },
+      { address: contains },
+      { note: contains },
+      {
+        assignedTo: {
+          is: {
+            name: contains,
+          },
+        },
+      },
+    ],
+  };
+}
+
 export function parsePaymentType(
   value: string | null | undefined
 ): PaymentType | undefined | "invalid" {
