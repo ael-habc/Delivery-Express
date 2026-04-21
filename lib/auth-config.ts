@@ -49,4 +49,18 @@ export const DEFAULT_APP_USERS: readonly DefaultAppUser[] = [
     legacyEmails: ["othman@delivery.local"],
     legacyNames: ["Othman"],
   },
+  {
+    name: "Test Delivery",
+    email: "test-delivery@delivery.local",
+    role: APP_ROLES.DELIVERY,
+    legacyEmails: ["test-delivery@delivery.local"],
+    legacyNames: ["Test Delivery"],
+  },
+  {
+    name: "Test Admin",
+    email: "test-admin@delivery.local",
+    role: APP_ROLES.ADMIN,
+    legacyEmails: ["test-admin@delivery.local"],
+    legacyNames: ["Test Admin"],
+  }
 ] as const;
