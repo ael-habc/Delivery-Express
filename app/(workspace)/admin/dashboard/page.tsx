@@ -88,7 +88,6 @@ export default async function AdminDashboardPage({
         ...(activeStatus ? { status: activeStatus } : {}),
         ...(searchWhere ? { AND: [searchWhere] } : {}),
       },
-      take: searchWhere ? 20 : 5,
       orderBy: { createdAt: "desc" },
       include: {
         assignedTo: {
