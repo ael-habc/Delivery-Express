@@ -20,6 +20,13 @@ type DeliveryOrdersSearchParams = {
   status?: string;
 };
 
+type DeliveryOrdersResult = Awaited<ReturnType<typeof prisma.order.findMany>>;
+
+type OrderGroup = {
+  label: string;
+  orders: DeliveryOrdersResult;
+};
+
 function getDeliveryOrdersHref(status: OrderStatus, query?: string) {
   const params = new URLSearchParams({ status });
   const q = query?.trim();
@@ -29,6 +36,38 @@ function getDeliveryOrdersHref(status: OrderStatus, query?: string) {
   }
 
   return `/delivery/orders?${params.toString()}`;
+}
+
+function groupOrdersByQuartier(orders: DeliveryOrdersResult, emptyLabel: string) {
+  const groups = new Map<string, OrderGroup>();
+
+  for (const order of orders) {
+    const rawQuartier = order.quartier?.trim();
+    const label = rawQuartier || emptyLabel;
+    const key = rawQuartier ? rawQuartier.toLocaleLowerCase("fr-FR") : "__empty__";
+    const existingGroup = groups.get(key);
+
+    if (existingGroup) {
+      existingGroup.orders.push(order);
+      continue;
+    }
+
+    groups.set(key, {
+      label,
+      orders: [order],
+    });
+  }
+
+  return Array.from(groups.entries())
+    .sort(([leftKey, leftGroup], [rightKey, rightGroup]) => {
+      if (leftKey === "__empty__") return 1;
+      if (rightKey === "__empty__") return -1;
+
+      return leftGroup.label.localeCompare(rightGroup.label, "fr", {
+        sensitivity: "base",
+      });
+    })
+    .map(([, group]) => group);
 }
 
 export default async function DeliveryOrdersPage({
@@ -51,8 +90,9 @@ export default async function DeliveryOrdersPage({
       ...(searchWhere ? { AND: [searchWhere] } : {}),
     },
     include: orderListInclude,
-    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    orderBy: [{ quartier: "asc" }, { status: "asc" }, { createdAt: "desc" }],
   });
+  const orderGroups = groupOrdersByQuartier(orders, "Sans quartier");
 
   return (
     <div className="space-y-6">
@@ -103,8 +143,24 @@ export default async function DeliveryOrdersPage({
       </Card>
 
       <div className="grid gap-4">
-        {orders.map((order) => (
-          <OrderCard key={order.id} order={order} href={`/delivery/orders/${order.id}`} />
+        {orderGroups.map((group) => (
+          <section key={group.label} className="space-y-3">
+            <div className="flex items-center justify-between gap-3 border-b pb-2">
+              <h3 className="text-lg font-semibold tracking-tight">{group.label}</h3>
+              <span className="text-sm text-muted-foreground">
+                {group.orders.length} commande{group.orders.length > 1 ? "s" : ""}
+              </span>
+            </div>
+            <div className="grid gap-4">
+              {group.orders.map((order) => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  href={`/delivery/orders/${order.id}`}
+                />
+              ))}
+            </div>
+          </section>
         ))}
         {orders.length === 0 ? (
           <Card>
