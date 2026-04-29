@@ -8,6 +8,7 @@
     "dashboard": "Tableau de bord",
     "orders": "Commandes",
     "myOrders": "Mes commandes",
+    "history": "Historique",
     "logout": "Se déconnecter",
     "logoutAria": "Se déconnecter"
   },
@@ -207,6 +208,17 @@
     "search": "Rechercher",
     "reset": "Réinitialiser",
     "empty": "Aucune commande active pour ce filtre."
+  },
+  "deliveryHistory": {
+    "title": "Historique des livraisons",
+    "subtitle": "Retrouve ici les commandes terminées par {name}.",
+    "filters": "Filtres",
+    "searchPlaceholder": "Rechercher par commande, quartier, client...",
+    "search": "Rechercher",
+    "reset": "Réinitialiser",
+    "empty": "Aucune commande terminée pour ce filtre.",
+    "completedAt": "Terminée le",
+    "statusLabel": "Statut final"
   },
   "deliveryOrderDetail": {
     "call": "Appeler",

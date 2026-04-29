@@ -20,7 +20,10 @@ export default async function WorkspaceLayout({
           { href: "/admin/dashboard", label: appCopy.nav.dashboard },
           { href: "/admin/orders", label: appCopy.nav.orders },
         ]
-      : [{ href: "/delivery/orders", label: appCopy.nav.myOrders }];
+      : [
+          { href: "/delivery/orders", label: appCopy.nav.myOrders },
+          { href: "/delivery/history", label: appCopy.nav.history },
+        ];
 
   return (
     <div className="min-h-screen">
