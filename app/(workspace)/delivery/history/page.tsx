@@ -16,19 +16,25 @@ import {
   PAYMENT_TYPE_LABELS,
 } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
-import { OrderEventType, OrderStatus } from "@/src/generated/prisma";
+import { OrderEventType } from "@/src/generated/prisma";
 
 type DeliveryHistorySearchParams = {
   q?: string;
   status?: string;
 };
 
+type DeliveryHistoryStatus = (typeof FINAL_ORDER_STATUSES)[number];
+
 const FINAL_EVENT_TYPES = [
   OrderEventType.DELIVERED,
   OrderEventType.CANCELLED,
 ] as const;
 
-function getHistoryHref(status: OrderStatus, query?: string) {
+function isDeliveryHistoryStatus(value: string): value is DeliveryHistoryStatus {
+  return FINAL_ORDER_STATUSES.includes(value as DeliveryHistoryStatus);
+}
+
+function getHistoryHref(status: DeliveryHistoryStatus, query?: string) {
   const params = new URLSearchParams({ status });
   const q = query?.trim();
 
@@ -46,10 +52,9 @@ export default async function DeliveryHistoryPage({
 }) {
   const [params, user] = await Promise.all([searchParams, requireDeliveryUser()]);
 
-  const status =
-    params.status && FINAL_ORDER_STATUSES.includes(params.status as OrderStatus)
-      ? (params.status as OrderStatus)
-      : undefined;
+  const status = params.status && isDeliveryHistoryStatus(params.status)
+    ? params.status
+    : undefined;
   const searchWhere = buildOrderSearchWhere(params.q);
 
   const orders = await prisma.order.findMany({

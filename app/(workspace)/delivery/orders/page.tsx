@@ -10,6 +10,7 @@ import {
   ACTIVE_ORDER_STATUSES,
   buildOrderSearchWhere,
   ORDER_STATUS_LABELS,
+  type OrderListItem,
   orderListInclude,
 } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
@@ -20,11 +21,9 @@ type DeliveryOrdersSearchParams = {
   status?: string;
 };
 
-type DeliveryOrdersResult = Awaited<ReturnType<typeof prisma.order.findMany>>;
-
 type OrderGroup = {
   label: string;
-  orders: DeliveryOrdersResult;
+  orders: OrderListItem[];
 };
 
 function getDeliveryOrdersHref(status: OrderStatus, query?: string) {
@@ -38,7 +37,7 @@ function getDeliveryOrdersHref(status: OrderStatus, query?: string) {
   return `/delivery/orders?${params.toString()}`;
 }
 
-function groupOrdersByQuartier(orders: DeliveryOrdersResult, emptyLabel: string) {
+function groupOrdersByQuartier(orders: OrderListItem[], emptyLabel: string) {
   const groups = new Map<string, OrderGroup>();
 
   for (const order of orders) {
